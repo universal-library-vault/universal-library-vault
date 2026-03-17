@@ -4511,7 +4511,7 @@ with gr.Blocks(css=CUSTOM_CSS, title="Universal Library Vault") as app:
         daily_jewel_box = gr.HTML(value=initial_daily_html)
         refresh_jewel_btn = gr.Button("Refresh Jewel", elem_id="refresh_btn")
         promo_box = gr.HTML(value=initial_promo_html)
-        promo_timer = gr.Timer(value=8.0, active=True)
+        promo_timer = gr.Timer(value=8.0, active=False)
 
         membership_debug_box = gr.JSON(label="Membership State", visible=False)
 
@@ -4579,12 +4579,6 @@ with gr.Blocks(css=CUSTOM_CSS, title="Universal Library Vault") as app:
         fn=refresh_vault_panels,
         inputs=[state],
         outputs=[daily_jewel_box, featured_shelf_box, state]
-    )
-
-    promo_timer.tick(
-        fn=rotate_promo,
-        inputs=[promo_state_store],
-        outputs=[promo_box, promo_state_store]
     )
 
     sign_up_btn.click(
@@ -4745,7 +4739,6 @@ with gr.Blocks(css=CUSTOM_CSS, title="Universal Library Vault") as app:
 # =========================================================
 # FASTAPI PRODUCTION SERVER
 # =========================================================
-app.queue()
 
 server = FastAPI(title="Universal Library Vault")
 

@@ -5,3 +5,4 @@ pandas==2.2.1
 python-multipart==0.0.9
 stripe==8.7.0
 pydantic==2.6.4
+gradio==4.44.1

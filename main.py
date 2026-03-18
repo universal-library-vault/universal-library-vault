@@ -3486,7 +3486,7 @@ html, body, .gradio-container {
 
 #app_shell {
   width: 100% !important;
-  max-width: 840px !important;
+  max-width: 780px !important;
   margin: 0 auto !important;
   padding: 14px !important;
   box-sizing: border-box !important;

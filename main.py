@@ -2011,13 +2011,13 @@ def restore_premium_access_ui(restore_input, membership, user_session, restore_c
         membership_out,
         debug_out,
         membership_html,
-        restore_html,
+        gr.update(visible=True, value=restore_html),
         account_html,
         favorites_update,
         favorites_status_html,
         refreshed_user_session,
         restore_claim_state,
-        restore_claim_html
+        gr.update(visible=bool(str(restore_claim_html).strip()), value=restore_claim_html)
     )
 
 def restore_account_and_favorites_on_load(user_session, membership):
@@ -3276,7 +3276,19 @@ def create_customer_portal_html(membership, user_session):
             customer_id = str(user.get("stripe_customer_id", "")).strip()
 
     if not customer_id:
-        return ""
+        return gr.update(
+            visible=True,
+            value="""
+            <div class="results_wrap">
+              <div class="card">
+                <div class="card_title">Manage Subscription</div>
+                <div class="body_text">
+                  No Stripe billing account was found for this user yet.
+                </div>
+              </div>
+            </div>
+            """
+        )
 
     try:
         return_url = str(APP_BASE_URL or "").strip().rstrip("/")
@@ -3291,37 +3303,56 @@ def create_customer_portal_html(membership, user_session):
         portal_url = html.escape(str(session.url or "").strip(), quote=True)
 
         if not portal_url:
-            return ""
+            return gr.update(
+                visible=True,
+                value="""
+                <div class="results_wrap">
+                  <div class="card">
+                    <div class="card_title">Manage Subscription</div>
+                    <div class="body_text">
+                      The billing portal could not be opened right now.
+                    </div>
+                  </div>
+                </div>
+                """
+            )
 
-        return f"""
-        <div class="results_wrap">
-          <div class="card">
-            <div class="card_title">Manage Subscription</div>
-            <div class="body_text">
-              Update billing details, manage payment methods, or cancel your subscription.
+        return gr.update(
+            visible=True,
+            value=f"""
+            <div class="results_wrap">
+              <div class="card">
+                <div class="card_title">Manage Subscription</div>
+                <div class="body_text">
+                  Update billing details, manage payment methods, or cancel your subscription.
+                </div>
+                <div style="margin-top:14px;">
+                  <a href="{portal_url}" target="_self" rel="noopener noreferrer" class="portal_btn">
+                    Open Stripe Billing Portal
+                  </a>
+                </div>
+              </div>
             </div>
-            <div style="margin-top:14px;">
-              <a href="{portal_url}" target="_self" rel="noopener noreferrer" class="portal_btn">
-                Manage Billing / Cancel
-              </a>
-            </div>
-          </div>
-        </div>
-        """
+            """
+        )
+
     except Exception as e:
-        return f"""
-        <div class="results_wrap">
-          <div class="card">
-            <div class="card_title">Manage Subscription</div>
-            <div class="body_text">
-              The billing portal could not be opened right now.
+        return gr.update(
+            visible=True,
+            value=f"""
+            <div class="results_wrap">
+              <div class="card">
+                <div class="card_title">Manage Subscription</div>
+                <div class="body_text">
+                  The billing portal could not be opened right now.
+                </div>
+                <div class="small_text" style="margin-top:8px;">
+                  {html.escape(str(e))}
+                </div>
+              </div>
             </div>
-            <div class="small_text" style="margin-top:8px;">
-              {html.escape(str(e))}
-            </div>
-          </div>
-        </div>
-        """
+            """
+        )
 
 def make_restore_claim_state():
     return {
@@ -3486,7 +3517,7 @@ html, body, .gradio-container {
 
 #app_shell {
   width: 100% !important;
-  max-width: 780px !important;
+  max-width: 800px !important;
   margin: 0 auto !important;
   padding: 14px !important;
   box-sizing: border-box !important;
@@ -4555,9 +4586,9 @@ with gr.Blocks(css=CUSTOM_CSS, head=CUSTOM_HEAD, title="Universal Library Vault"
                 )
                 restore_btn = gr.Button("Restore Premium")
                 manage_portal_btn = gr.Button("Manage Billing / Cancel", elem_classes=["membership_secondary_btn"])
-                manage_portal_link_box = gr.HTML(value="", elem_id="manage_portal_link_box")
-                restore_result_box = gr.HTML(value="", elem_id="restore_result_box")
-                restore_claim_status_box = gr.HTML(value="", elem_id="restore_claim_status_box")
+                manage_portal_link_box = gr.HTML(value="", elem_id="manage_portal_link_box", visible=False)
+                restore_result_box = gr.HTML(value="", elem_id="restore_result_box", visible=False)
+                restore_claim_status_box = gr.HTML(value="", elem_id="restore_claim_status_box", visible=False)
 
                 restore_password_email_input = gr.Textbox(
                     label="Premium Account Email",
@@ -4835,7 +4866,11 @@ with gr.Blocks(css=CUSTOM_CSS, head=CUSTOM_HEAD, title="Universal Library Vault"
     )
 
     app.load(
-        fn=lambda: ("", make_restore_claim_state(), ""),
+        fn=lambda: (
+            gr.update(visible=False, value=""),
+            make_restore_claim_state(),
+            gr.update(visible=False, value="")
+        ),
         inputs=None,
         outputs=[restore_result_box, restore_claim_store, restore_claim_status_box]
     )

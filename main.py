@@ -3509,6 +3509,34 @@ html, body, .gradio-container {
   font-family: Inter, Arial, sans-serif !important;
 }
 
+/* 🔒 HARD GLOBAL WIDTH LOCK (DESKTOP) */
+
+html, body {
+  overflow-x: hidden !important;
+}
+
+/* Streamlit main container clamp */
+.main .block-container,
+.block-container {
+  max-width: 760px !important;
+  margin: 0 auto !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+}
+
+/* Prevent parent stretch */
+.stApp {
+  display: flex !important;
+  justify-content: center !important;
+}
+
+/* Your app shell still controls inner layout */
+#app_shell {
+  width: 100% !important;
+  max-width: 760px !important;
+  margin: 0 auto !important;
+}
+
 .gradio-container {
   width: 100% !important;
   max-width: 100% !important;

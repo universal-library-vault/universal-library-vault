@@ -3522,6 +3522,9 @@ html, body, .gradio-container {
   padding: 14px !important;
   box-sizing: border-box !important;
   overflow-x: hidden !important;
+
+  /* 🔥 THIS LINE MAKES DESKTOP LOOK LIKE AN APP */
+  transform: translateZ(0);
 }
 
 #app_shell * {

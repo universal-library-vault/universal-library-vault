@@ -3543,18 +3543,6 @@ html, body {
   overflow-x: hidden !important;
 }
 
-#app_shell {
-  width: 100% !important;
-  max-width: 760px !important;
-  margin: 0 auto !important;
-  padding: 14px !important;
-  box-sizing: border-box !important;
-  overflow-x: hidden !important;
-
-  /* 🔥 THIS LINE MAKES DESKTOP LOOK LIKE AN APP */
-  transform: translateZ(0);
-}
-
 #app_shell * {
   max-width: 100%;
   box-sizing: border-box;

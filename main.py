@@ -4699,26 +4699,6 @@ with gr.Blocks(css=CUSTOM_CSS, title="Universal Library Vault") as app:
         outputs=[user_session_store, account_status_box, membership_debug_box, favorites_selector, favorites_status_box, continue_reading_box]
     )
 
-
-    app.load(
-        fn=auto_restore_from_local,
-        inputs=[membership_store],
-        outputs=[membership_store, membership_debug_box, membership_status_box]
-    )
-
-
-    app.load(
-        fn=verify_stripe_return_and_restore_membership,
-        inputs=[membership_store, stripe_flash_store],
-        outputs=[membership_store, membership_status_box, membership_debug_box, stripe_flash_store]
-    )
-
-    app.load(
-        fn=render_stripe_flash_on_load,
-        inputs=[stripe_flash_store],
-        outputs=[stripe_flash_store, stripe_return_box]
-    )
-
     app.load(
         fn=lambda: (
             gr.update(visible=False),

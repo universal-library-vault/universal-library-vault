@@ -3517,7 +3517,7 @@ html, body, .gradio-container {
 
 #app_shell {
   width: 100% !important;
-  max-width: 800px !important;
+  max-width: 760px !important;
   margin: 0 auto !important;
   padding: 14px !important;
   box-sizing: border-box !important;
@@ -4358,13 +4358,6 @@ html, body, .gradio-container {
     height: 30px !important;
     min-height: 30px !important;
     padding: 0 6px !important;
-  }
-}
-
-@media (min-width: 992px) {
-  #app_shell {
-    max-width: 1080px !important;
-    padding: 18px !important;
   }
 }
 

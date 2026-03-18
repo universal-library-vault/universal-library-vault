@@ -4738,7 +4738,7 @@ with gr.Blocks(css=CUSTOM_CSS, head=CUSTOM_HEAD, title="Universal Library Vault"
         outputs=[restore_password_email_input]
     )
 
-        manage_portal_btn.click(
+    manage_portal_btn.click(
         fn=create_customer_portal_html,
         inputs=[membership_store, user_session_store],
         outputs=[manage_portal_link_box]

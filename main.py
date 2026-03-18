@@ -3264,6 +3264,65 @@ def render_stripe_flash_on_load(flash):
     flash, html_out = consume_stripe_flash(flash)
     return flash, html_out
 
+def create_customer_portal_html(membership, user_session):
+    membership = normalize_membership_state(membership)
+    user_session = normalize_user_session_state(user_session)
+
+    customer_id = str(membership.get("customer_id", "")).strip()
+
+    if not customer_id and user_session.get("logged_in"):
+        data, idx, user = _get_user_record_from_session(user_session)
+        if user:
+            customer_id = str(user.get("stripe_customer_id", "")).strip()
+
+    if not customer_id:
+        return ""
+
+    try:
+        return_url = str(APP_BASE_URL or "").strip().rstrip("/")
+        if not return_url:
+            return_url = "https://vault.urbaninteractiveadventures.com"
+
+        session = stripe.billing_portal.Session.create(
+            customer=customer_id,
+            return_url=return_url
+        )
+
+        portal_url = html.escape(str(session.url or "").strip(), quote=True)
+
+        if not portal_url:
+            return ""
+
+        return f"""
+        <div class="results_wrap">
+          <div class="card">
+            <div class="card_title">Manage Subscription</div>
+            <div class="body_text">
+              Update billing details, manage payment methods, or cancel your subscription.
+            </div>
+            <div style="margin-top:14px;">
+              <a href="{portal_url}" target="_self" rel="noopener noreferrer" class="portal_btn">
+                Manage Billing / Cancel
+              </a>
+            </div>
+          </div>
+        </div>
+        """
+    except Exception as e:
+        return f"""
+        <div class="results_wrap">
+          <div class="card">
+            <div class="card_title">Manage Subscription</div>
+            <div class="body_text">
+              The billing portal could not be opened right now.
+            </div>
+            <div class="small_text" style="margin-top:8px;">
+              {html.escape(str(e))}
+            </div>
+          </div>
+        </div>
+        """
+
 def make_restore_claim_state():
     return {
         "email": "",
@@ -3387,6 +3446,9 @@ def toggle_category_results(category_name, panel_state):
 # =========================================================
 # MOBILE-FIRST APP CSS
 # =========================================================
+CUSTOM_HEAD = """
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+"""
 CUSTOM_CSS = """
 :root {
   --bg-1: #020617;
@@ -3424,7 +3486,7 @@ html, body, .gradio-container {
 
 #app_shell {
   width: 100% !important;
-  max-width: 760px !important;
+  max-width: 1040px !important;
   margin: 0 auto !important;
   padding: 14px !important;
   box-sizing: border-box !important;
@@ -4268,11 +4330,34 @@ html, body, .gradio-container {
   }
 }
 
-@media (max-width: 767px) {
+@media (min-width: 992px) {
   #app_shell {
-    max-width: 430px !important;
-    padding: 10px !important;
+    max-width: 1080px !important;
+    padding: 18px !important;
   }
+}
+
+html, body {
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+  overscroll-behavior-x: none !important;
+}
+
+body {
+  position: relative !important;
+}
+
+.gradio-container,
+#app_shell,
+.results_wrap,
+.side_wrap,
+.utility_panel_wrap,
+.pdf_viewer_wrap,
+.promo_shell,
+.featured_wrap {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
 
   .title_main {
     font-size: 24px;
@@ -4301,9 +4386,41 @@ html, body, .gradio-container {
     min-height: 30px;
   }
 }
+
+#restore_result_box:empty,
+#restore_claim_status_box:empty,
+#manage_portal_link_box:empty {
+  display: none !important;
+}
+
+#restore_result_box,
+#restore_claim_status_box,
+#manage_portal_link_box {
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+}
+
+.portal_btn {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  background: rgba(51,65,85,0.95);
+  color: #ffffff !important;
+  text-decoration: none !important;
+  border: 1px solid rgba(148,163,184,0.18);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 800;
+}
+
+.portal_btn:hover {
+  background: rgba(71,85,105,0.98);
+  color: #ffffff !important;
+}
 """
 
-with gr.Blocks(css=CUSTOM_CSS, title="Universal Library Vault") as app:
+with gr.Blocks(css=CUSTOM_CSS, head=CUSTOM_HEAD, title="Universal Library Vault") as app:
     state = gr.State(vault_state)
     promo_state_store = gr.State(promo_state)
     utility_panel_store = gr.State(make_utility_panel_state())
@@ -4437,9 +4554,10 @@ with gr.Blocks(css=CUSTOM_CSS, title="Universal Library Vault") as app:
                     lines=1
                 )
                 restore_btn = gr.Button("Restore Premium")
-                restore_result_box = gr.HTML(value="")
-
-                restore_claim_status_box = gr.HTML(value="")
+                manage_portal_btn = gr.Button("Manage Billing / Cancel", elem_classes=["membership_secondary_btn"])
+                manage_portal_link_box = gr.HTML(value="", elem_id="manage_portal_link_box")
+                restore_result_box = gr.HTML(value="", elem_id="restore_result_box")
+                restore_claim_status_box = gr.HTML(value="", elem_id="restore_claim_status_box")
 
                 restore_password_email_input = gr.Textbox(
                     label="Premium Account Email",
@@ -4618,6 +4736,12 @@ with gr.Blocks(css=CUSTOM_CSS, title="Universal Library Vault") as app:
         fn=lambda state: normalize_restore_claim_state(state).get("email", ""),
         inputs=[restore_claim_store],
         outputs=[restore_password_email_input]
+    )
+
+        manage_portal_btn.click(
+        fn=create_customer_portal_html,
+        inputs=[membership_store, user_session_store],
+        outputs=[manage_portal_link_box]
     )
 
     set_restored_password_btn.click(

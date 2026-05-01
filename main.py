@@ -8,6 +8,7 @@ from datetime import date
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 # =========================================================
 # PROJECT PATHS
@@ -963,20 +964,21 @@ html, body, .gradio-container {
 
 #query_box textarea {
   display: block !important;
-  min-height: 82px !important;
-  height: 82px !important;
-  max-height: 120px !important;
+  min-height: 58px !important;
+  height: 58px !important;
+  max-height: 90px !important;
   visibility: visible !important;
   opacity: 1 !important;
-  resize: vertical !important;
+  resize: none !important;
   overflow-y: auto !important;
-  background: rgba(30,41,59,1) !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(148,163,184,0.24) !important;
-  border-radius: 14px !important;
-  font-size: 16px !important;
-  line-height: 1.45 !important;
-  padding: 14px 16px !important;
+  background: rgba(30,41,59,0.86) !important;
+  color: #e5e7eb !important;
+  border: 1px solid rgba(148,163,184,0.18) !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+  padding: 11px 14px !important;
   box-sizing: border-box !important;
 }
 
@@ -1386,11 +1388,11 @@ html, body, .gradio-container {
   }
 
   #query_box textarea {
-    min-height: 84px !important;
-    height: 84px !important;
-    max-height: 118px !important;
-    font-size: 16px !important;
-    padding: 14px 16px !important;
+    min-height: 58px !important;
+    height: 58px !important;
+    max-height: 90px !important;
+    font-size: 14px !important;
+    padding: 11px 14px !important;
   }
 
   #category_button_stack {
@@ -1457,6 +1459,310 @@ html, body, .gradio-container {
   }
 }
 
+/* =========================================================
+   WEGOTUSTV CINEMATIC RESKIN
+   ========================================================= */
+
+:root {
+  --wgutv-black: #020202;
+  --wgutv-deep: #050505;
+  --wgutv-panel: rgba(10, 12, 16, 0.88);
+  --wgutv-panel-soft: rgba(17, 20, 28, 0.82);
+  --wgutv-red: #ef1d24;
+  --wgutv-red-dark: #8f1117;
+  --wgutv-gold: #9a7a4a;
+  --wgutv-border: rgba(255,255,255,0.10);
+}
+
+html,
+body,
+.gradio-container {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(27, 55, 95, 0.28), transparent 28%),
+    radial-gradient(circle at 92% 10%, rgba(105, 16, 20, 0.28), transparent 32%),
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.045), transparent 28%),
+    linear-gradient(180deg, #050505 0%, #010101 45%, #000000 100%) !important;
+  color: #ffffff !important;
+}
+
+.gradio-container::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.22;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.035) 0px,
+      rgba(255,255,255,0.035) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,0.02) 0px,
+      rgba(255,255,255,0.02) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  mix-blend-mode: overlay;
+}
+
+.gradio-container::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,0.96), rgba(0,0,0,0.28) 42%, rgba(0,0,0,0.92)),
+    radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.72) 76%);
+}
+
+#app_shell {
+  position: relative !important;
+  z-index: 2 !important;
+  max-width: 980px !important;
+  padding: 18px 16px 32px !important;
+}
+
+.title_wrap {
+  position: relative;
+  overflow: hidden;
+  min-height: 230px;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 20px;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,0.92) 0%, rgba(3,6,12,0.74) 45%, rgba(24,5,7,0.36) 100%),
+    radial-gradient(circle at 24% 20%, rgba(49, 92, 140, 0.18), transparent 34%),
+    radial-gradient(circle at 88% 16%, rgba(145, 18, 24, 0.28), transparent 34%),
+    #030303;
+  padding: 38px 18px 34px 18px;
+  margin-bottom: 18px;
+  text-align: left;
+  box-shadow:
+    0 24px 70px rgba(0,0,0,0.62),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.title_wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.055), transparent 22%),
+    linear-gradient(90deg, rgba(0,0,0,0.05), rgba(0,0,0,0.72));
+  z-index: 1;
+}
+
+.vault_logo_backdrop {
+  position: absolute;
+  inset: -30px -70px -50px 30px;
+  z-index: 0;
+  background-image: url("/assets/WGULOGO.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: min(118%, 980px);
+  opacity: 0.30;
+  filter: sepia(0.25) saturate(0.8) brightness(0.55) contrast(1.18);
+  mix-blend-mode: screen;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.96) 22%, rgba(0,0,0,0.82) 68%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.96) 22%, rgba(0,0,0,0.82) 68%, transparent 100%);
+}
+
+.title_content {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+}
+
+.title_eyebrow {
+  margin: 0 0 12px 0;
+  color: #ff4b55;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+}
+
+.title_main {
+  font-size: clamp(34px, 6vw, 58px);
+  font-weight: 950;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  margin-bottom: 14px;
+  color: #ffffff;
+  text-shadow: 0 10px 28px rgba(0,0,0,0.72);
+}
+
+.title_tag {
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(255,255,255,0.82);
+  max-width: 640px;
+  margin: 0;
+  text-shadow: 0 8px 20px rgba(0,0,0,0.72);
+}
+
+.free_access_wrap {
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(10,12,16,0.92), rgba(17,22,33,0.62)),
+    radial-gradient(circle at 80% 0%, rgba(239,29,36,0.16), transparent 38%);
+  padding: 14px 12px;
+  margin-bottom: 16px;
+  text-align: center;
+  box-shadow:
+    0 16px 40px rgba(0,0,0,0.42),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.free_access_title {
+  font-size: 18px;
+  font-weight: 950;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.free_access_text {
+  color: rgba(255,255,255,0.72);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+#query_box,
+#result_selector_radio,
+.results_wrap,
+.side_wrap,
+.promo_card {
+  filter: drop-shadow(0 18px 34px rgba(0,0,0,0.34));
+}
+
+#query_box .wrap,
+#query_box .block,
+#query_box textarea {
+  background:
+    linear-gradient(180deg, rgba(18,21,29,0.92), rgba(9,11,16,0.92)) !important;
+  border-color: rgba(255,255,255,0.11) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.065),
+    0 18px 40px rgba(0,0,0,0.32) !important;
+}
+
+#query_box textarea {
+  min-height: 54px !important;
+  height: 54px !important;
+  max-height: 82px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+  color: rgba(255,255,255,0.78) !important;
+  padding: 10px 13px !important;
+}
+
+#query_box textarea::placeholder {
+  color: rgba(255,255,255,0.62) !important;
+}
+
+#browse_btn,
+#browse_btn button {
+  background: linear-gradient(135deg, #0aa58f, #077263) !important;
+  box-shadow: 0 16px 34px rgba(0,0,0,0.34) !important;
+}
+
+.category_btn,
+.category_btn button {
+  background: linear-gradient(135deg, #ef1d24, #991116) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 12px 26px rgba(0,0,0,0.38) !important;
+}
+
+.category_btn:hover,
+.category_btn button:hover {
+  background: linear-gradient(135deg, #ff3038, #b9151b) !important;
+}
+
+#open_pdf_btn,
+#open_pdf_btn button {
+  background: linear-gradient(135deg, #ff262d, #c80f15) !important;
+  box-shadow: 0 16px 34px rgba(0,0,0,0.38) !important;
+}
+
+#result_selector_radio .wrap,
+#result_selector_radio .block,
+#result_selector_radio fieldset,
+.results_wrap,
+.side_wrap {
+  border-color: rgba(255,255,255,0.10) !important;
+  background:
+    linear-gradient(180deg, rgba(12,14,20,0.94), rgba(5,6,10,0.94)) !important;
+  box-shadow:
+    0 20px 48px rgba(0,0,0,0.48),
+    inset 0 1px 0 rgba(255,255,255,0.055) !important;
+}
+
+.card {
+  border-color: rgba(255,255,255,0.10);
+  background:
+    linear-gradient(180deg, rgba(27,31,43,0.84), rgba(14,17,24,0.86));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.featured_cover,
+.promo_stage,
+.pdf_viewer_wrap {
+  border-color: rgba(255,255,255,0.10);
+  background: #050505;
+}
+
+@media (max-width: 767px) {
+  #app_shell {
+    max-width: 430px !important;
+    padding: 10px !important;
+  }
+
+  .title_wrap {
+    min-height: 190px;
+    padding: 28px 14px 26px 14px;
+    text-align: left;
+  }
+
+  .vault_logo_backdrop {
+    inset: -20px -80px -40px -10px;
+    background-size: 720px auto;
+    opacity: 0.26;
+  }
+
+  .title_eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.34em;
+    margin-bottom: 10px;
+  }
+
+  .title_main {
+    font-size: 34px;
+    line-height: 1;
+  }
+
+  .title_tag {
+    font-size: 12px;
+    line-height: 1.45;
+    max-width: 310px;
+  }
+
+  #query_box textarea {
+    min-height: 52px !important;
+    height: 52px !important;
+    max-height: 78px !important;
+    font-size: 13px !important;
+    padding: 10px 12px !important;
+  }
+}
+
 /* Hide Gradio footer / settings */
 footer {
   display: none !important;
@@ -1488,7 +1794,7 @@ initial_promo_html, promo_state = rotate_promo(promo_state)
 # GRADIO APP
 # =========================================================
 
-with gr.Blocks(css=CUSTOM_CSS, title="Universal Library Vault") as vault_app:
+with gr.Blocks(css=CUSTOM_CSS, title="WeGotUsTV Library Vault") as vault_app:
     promo_state_store = gr.State(promo_state)
 
     selected_pdf_store = gr.State({
@@ -1499,10 +1805,14 @@ with gr.Blocks(css=CUSTOM_CSS, title="Universal Library Vault") as vault_app:
     with gr.Column(elem_id="app_shell"):
         gr.HTML("""
         <div class="title_wrap">
-          <div class="title_main">Universal Library Vault</div>
-          <div class="title_tag">
-            Unveil the hidden architecture of over 2,800 PDF books from the 15th–21st century.<br>
-            The #1 library index full of forbidden books and buried transmissions. Search freely.
+          <div class="vault_logo_backdrop"></div>
+          <div class="title_content">
+            <div class="title_eyebrow">WE GOT US TV</div>
+            <div class="title_main">WeGotUsTV Library Vault</div>
+            <div class="title_tag">
+              Unveil the hidden architecture of over 2,800 PDF books from the 15th–21st century.<br>
+              The #1 library index full of forbidden books and buried transmissions. Search freely.
+            </div>
           </div>
         </div>
         """)
@@ -1511,7 +1821,7 @@ with gr.Blocks(css=CUSTOM_CSS, title="Universal Library Vault") as vault_app:
         <div class="free_access_wrap">
           <div class="free_access_title">Free Public Access</div>
           <div class="free_access_text">
-            No membership. No premium gate. No daily reading limit. Search the vault and open available PDFs freely.
+            We Got Us, Knowledge is Power.
           </div>
         </div>
         """)
@@ -1519,7 +1829,7 @@ with gr.Blocks(css=CUSTOM_CSS, title="Universal Library Vault") as vault_app:
         query_box = gr.Textbox(
             lines=3,
             max_lines=6,
-            label="Matrix Access Input",
+            label="Search The Matrix",
             placeholder=BROWSE_HINT,
             elem_id="query_box",
             show_label=False,
@@ -1545,7 +1855,7 @@ with gr.Blocks(css=CUSTOM_CSS, title="Universal Library Vault") as vault_app:
         result_selector = gr.Radio(
             choices=[],
             value=None,
-            label="Browse the Library Vault",
+            label="Storage Vault",
             interactive=True,
             elem_id="result_selector_radio"
         )
@@ -1612,7 +1922,13 @@ with gr.Blocks(css=CUSTOM_CSS, title="Universal Library Vault") as vault_app:
 
 vault_app.queue()
 
-server = FastAPI(title="Universal Library Vault")
+server = FastAPI(title="WeGotUsTV Library Vault")
+
+server.mount(
+    "/assets",
+    StaticFiles(directory=str(DATA_DIR)),
+    name="assets"
+)
 
 @server.get("/health")
 async def healthcheck():

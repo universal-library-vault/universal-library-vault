@@ -1553,24 +1553,33 @@ body,
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.055), transparent 22%),
-    linear-gradient(90deg, rgba(0,0,0,0.05), rgba(0,0,0,0.72));
+    linear-gradient(180deg, rgba(255,255,255,0.035), transparent 24%),
+    linear-gradient(90deg, rgba(0,0,0,0.20), rgba(0,0,0,0.38));
   z-index: 1;
 }
 
 .vault_logo_backdrop {
   position: absolute;
-  inset: -30px -70px -50px 30px;
+  inset: -40px -90px -50px -90px;
   z-index: 0;
   background-image: url("/assets/WGULOGO.png");
   background-repeat: no-repeat;
   background-position: center center;
-  background-size: min(118%, 980px);
-  opacity: 0.30;
-  filter: sepia(0.25) saturate(0.8) brightness(0.55) contrast(1.18);
-  mix-blend-mode: screen;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.96) 22%, rgba(0,0,0,0.82) 68%, transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.96) 22%, rgba(0,0,0,0.82) 68%, transparent 100%);
+  background-size: min(115%, 1050px);
+  opacity: 0.62;
+  filter: brightness(0.72) contrast(1.22) saturate(0.95);
+  mix-blend-mode: normal;
+  pointer-events: none;
+}
+
+.vault_logo_backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,0.72), rgba(0,0,0,0.22), rgba(0,0,0,0.72)),
+    linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.58));
+  pointer-events: none;
 }
 
 .title_content {
@@ -1732,9 +1741,10 @@ body,
   }
 
   .vault_logo_backdrop {
-    inset: -20px -80px -40px -10px;
-    background-size: 720px auto;
-    opacity: 0.26;
+    inset: -25px -130px -35px -130px;
+    background-size: 780px auto;
+    background-position: center center;
+    opacity: 0.52;
   }
 
   .title_eyebrow {
@@ -1755,11 +1765,143 @@ body,
   }
 
   #query_box textarea {
-    min-height: 52px !important;
-    height: 52px !important;
-    max-height: 78px !important;
+  min-height: 56px !important;
+  height: 56px !important;
+  max-height: 84px !important;
+  font-size: 16px !important;
+  padding: 10px 12px !important;
+}
+}
+
+/* =========================================================
+   MOBILE ZOOM / CENTERING FIX
+   ========================================================= */
+
+html,
+body,
+.gradio-container {
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+  touch-action: pan-y !important;
+}
+
+#app_shell {
+  width: 100% !important;
+  max-width: 430px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Center the hero words */
+.title_wrap {
+  text-align: center !important;
+}
+
+.title_content {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+.title_eyebrow,
+.title_main,
+.title_tag {
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* iPhone Safari zoom prevention: inputs must be 16px or larger */
+#query_box textarea,
+#query_box input,
+textarea,
+input,
+select {
+  font-size: 16px !important;
+}
+
+/* Keep the query box from forcing page width wider */
+#query_box,
+#query_box *,
+#result_selector_radio,
+#result_selector_radio *,
+.category_btn,
+.category_btn button,
+#browse_btn,
+#browse_btn button,
+#open_pdf_btn,
+#open_pdf_btn button {
+  max-width: 100% !important;
+}
+
+/* Stop the red category buttons from stretching beyond the centered app width */
+#category_button_stack,
+#category_button_row {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+@media (max-width: 767px) {
+  #app_shell {
+    max-width: 430px !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .title_wrap {
+    text-align: center !important;
+  }
+
+  .title_content {
+    max-width: 100% !important;
+    text-align: center !important;
+  }
+
+  .title_main {
+    text-align: center !important;
+    font-size: 32px !important;
+    line-height: 1.02 !important;
+  }
+
+  .title_tag {
+    text-align: center !important;
+    max-width: 340px !important;
     font-size: 13px !important;
+    line-height: 1.45 !important;
+  }
+
+  .title_eyebrow {
+    text-align: center !important;
+  }
+
+  #query_box textarea {
+    font-size: 16px !important;
+    min-height: 56px !important;
+    height: 56px !important;
+    max-height: 84px !important;
     padding: 10px 12px !important;
+  }
+
+  #category_button_row {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .category_btn,
+  .category_btn button {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  #browse_btn,
+  #browse_btn button,
+  #open_pdf_btn,
+  #open_pdf_btn button {
+    width: 100% !important;
+    max-width: 100% !important;
   }
 }
 

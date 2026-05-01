@@ -1456,6 +1456,23 @@ html, body, .gradio-container {
     font-size: 14px;
   }
 }
+
+/* Hide Gradio footer / settings */
+footer {
+  display: none !important;
+}
+
+.gradio-container footer {
+  display: none !important;
+}
+
+#footer {
+  display: none !important;
+}
+
+a[href*="gradio.app"] {
+  display: none !important;
+}
 """
 
 # =========================================================

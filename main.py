@@ -1905,6 +1905,34 @@ select {
   }
 }
 
+/* =========================================================
+   DESKTOP WIDTH REFINEMENT ONLY
+   ========================================================= */
+
+@media (min-width: 1024px) {
+  #app_shell {
+    max-width: 720px !important;
+    width: 720px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .title_wrap,
+  .free_access_wrap,
+  #query_box,
+  #browse_btn,
+  #category_button_stack,
+  #result_selector_radio,
+  #open_pdf_btn,
+  .featured_wrap,
+  .side_wrap,
+  .promo_shell,
+  .results_wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
 /* Hide Gradio footer / settings */
 footer {
   display: none !important;

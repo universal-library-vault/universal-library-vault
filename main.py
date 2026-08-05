@@ -1949,6 +1949,32 @@ footer {
 a[href*="gradio.app"] {
   display: none !important;
 }
+
+/* ---- the door home + the share row -------------------------------------- */
+/* Sits under the title plate, above Free Public Access. Wraps on a phone so a
+   narrow screen never pushes a button off the edge. */
+.vault_share_row{
+  display:flex; flex-wrap:wrap; gap:8px;
+  align-items:center; justify-content:center;
+  margin:14px auto 6px auto; max-width:920px;
+}
+.vault_home_btn, .vault_share_btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:9px 16px; border-radius:999px;
+  font-weight:800; font-size:12px; letter-spacing:.04em;
+  text-decoration:none !important; white-space:nowrap;
+  transition:background .15s ease, border-color .15s ease;
+}
+.vault_home_btn{
+  background:linear-gradient(180deg,#e11d2f,#a30d1c);
+  border:1px solid rgba(255,255,255,.22); color:#fff !important;
+}
+.vault_home_btn:hover{ background:linear-gradient(180deg,#f2263a,#b81020); }
+.vault_share_btn{
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.18); color:#f2f2f2 !important;
+}
+.vault_share_btn:hover{ background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.34); }
 """
 
 # =========================================================
@@ -1984,6 +2010,37 @@ with gr.Blocks(css=CUSTOM_CSS, title="WeGotUsTV Library Vault") as vault_app:
               The #1 library index full of forbidden books and buried transmissions. Search freely.
             </div>
           </div>
+        </div>
+        """)
+
+
+        # =========================================================
+        # THE WAY HOME, AND THE WAY OUT TO EVERYWHERE ELSE
+        #
+        # Esa: "we need to make sure they have a share button on it, and it has
+        # a button that can link back to the WeGotUsTV platform."
+        #
+        # The vault sits on its own domain (vault.urbaninteractiveadventures.com)
+        # and, until now, had no door back to the platform it belongs to and no
+        # way for a visitor to pass it on. Somebody who found the vault could not
+        # discover WeGotUsTV from it, and could not tell anyone about it without
+        # copying the address bar.
+        #
+        # Plain anchor tags on purpose — Gradio owns this page's event loop, and
+        # a share link needs no Python round trip. `target="_blank"` with
+        # `rel="noopener"` so the vault is never left behind in the tab.
+        # =========================================================
+        gr.HTML("""
+        <div class="vault_share_row">
+          <a class="vault_home_btn" href="https://www.wegotustv.com" target="_blank" rel="noopener">← WeGotUsTV</a>
+          <a class="vault_share_btn" target="_blank" rel="noopener"
+             href="https://twitter.com/intent/tweet?text=The%20WeGotUsTV%20Library%20Vault%20%E2%80%94%20over%202%2C800%20PDF%20books%2C%2015th%E2%80%9321st%20century%2C%20free%20to%20search.%20%F0%9F%94%B4&url=https%3A%2F%2Fvault.urbaninteractiveadventures.com">𝕏 Post</a>
+          <a class="vault_share_btn" target="_blank" rel="noopener"
+             href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fvault.urbaninteractiveadventures.com">f Facebook</a>
+          <a class="vault_share_btn" target="_blank" rel="noopener"
+             href="https://t.me/share/url?url=https%3A%2F%2Fvault.urbaninteractiveadventures.com&text=The%20WeGotUsTV%20Library%20Vault%20%E2%80%94%20free%20to%20search.">✈ Telegram</a>
+          <a class="vault_share_btn" target="_blank" rel="noopener"
+             href="https://wa.me/?text=The%20WeGotUsTV%20Library%20Vault%20%E2%80%94%20free%20to%20search.%20https%3A%2F%2Fvault.urbaninteractiveadventures.com">◎ WhatsApp</a>
         </div>
         """)
 

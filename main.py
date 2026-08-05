@@ -3,6 +3,7 @@ import os
 import re
 import html
 import random
+import urllib.parse
 import pandas as pd
 from datetime import date
 from pathlib import Path
@@ -1989,6 +1990,60 @@ promo_state = make_promo_state()
 initial_promo_html, promo_state = rotate_promo(promo_state)
 
 # =========================================================
+# THE VAULT'S OWN IDENTITY, AND WHY EVERY SHARE LINK CARRIES A VERSION
+#
+# X, Facebook and Telegram scrape a URL ONCE and cache what they got. Facebook
+# had already cached this vault's BROKEN card — the empty og:image Gradio was
+# shipping — so fixing the tags server-side does not, on its own, change what
+# Facebook posts. It never looks again at a URL it already holds.
+#
+# The platform solved this in code rather than handing Esa a chore
+# (app/lib/shareVersion.ts: "telling him 'add ?v=3 by hand' put our caching
+# problem in his hands, which is not a fix"). Same answer here: every outbound
+# share link carries the deploy it came from, so the first link minted after a
+# card change is a URL no scraper has ever seen, and they all fetch it fresh.
+#
+# 🔑 IT IS THE COMMIT, NOT A RANDOM NUMBER — a random value would mint a new URL
+# on every click and split one page across thousands of addresses. Render sets
+# RENDER_GIT_COMMIT automatically; the fallback only ever applies off-Render.
+# `og:url` stays the CLEAN canonical URL, exactly as the platform does it.
+# =========================================================
+
+VAULT_URL = "https://vault.urbaninteractiveadventures.com/"
+VAULT_TITLE = "WeGotUsTV Library Vault"
+VAULT_DESCRIPTION = (
+    "Over 2,800 PDF books, 15th–21st century — alchemy, hermeticism, magic, "
+    "mysticism, religion, mythology, early science and philosophy. "
+    "Free to search. We Got Us, Knowledge is Power. 🔴"
+)
+VAULT_IMAGE = "https://www.wegotustv.com/og-wegotustv.jpg"
+
+SHARE_VERSION = (os.environ.get("RENDER_GIT_COMMIT") or "1")[:7]
+VAULT_SHARE_URL = f"{VAULT_URL}?v={SHARE_VERSION}"
+
+SHARE_PITCH = (
+    "The WeGotUsTV Library Vault — over 2,800 PDF books, 15th–21st century, "
+    "free to search. 🔴"
+)
+
+_u = urllib.parse.quote(VAULT_SHARE_URL, safe="")
+_t = urllib.parse.quote(SHARE_PITCH, safe="")
+
+VAULT_SHARE_ROW = f"""
+<div class="vault_share_row">
+  <a class="vault_home_btn" href="https://www.wegotustv.com" target="_blank" rel="noopener">← WeGotUsTV</a>
+  <a class="vault_share_btn" target="_blank" rel="noopener"
+     href="https://twitter.com/intent/tweet?text={_t}&url={_u}">𝕏 Post</a>
+  <a class="vault_share_btn" target="_blank" rel="noopener"
+     href="https://www.facebook.com/sharer/sharer.php?u={_u}">f Facebook</a>
+  <a class="vault_share_btn" target="_blank" rel="noopener"
+     href="https://t.me/share/url?url={_u}&text={_t}">✈ Telegram</a>
+  <a class="vault_share_btn" target="_blank" rel="noopener"
+     href="https://wa.me/?text={_t}%20{_u}">◎ WhatsApp</a>
+</div>
+"""
+
+# =========================================================
 # GRADIO APP
 # =========================================================
 
@@ -2032,19 +2087,7 @@ with gr.Blocks(css=CUSTOM_CSS, title="WeGotUsTV Library Vault") as vault_app:
         # a share link needs no Python round trip. `target="_blank"` with
         # `rel="noopener"` so the vault is never left behind in the tab.
         # =========================================================
-        gr.HTML("""
-        <div class="vault_share_row">
-          <a class="vault_home_btn" href="https://www.wegotustv.com" target="_blank" rel="noopener">← WeGotUsTV</a>
-          <a class="vault_share_btn" target="_blank" rel="noopener"
-             href="https://twitter.com/intent/tweet?text=The%20WeGotUsTV%20Library%20Vault%20%E2%80%94%20over%202%2C800%20PDF%20books%2C%2015th%E2%80%9321st%20century%2C%20free%20to%20search.%20%F0%9F%94%B4&url=https%3A%2F%2Fvault.urbaninteractiveadventures.com">𝕏 Post</a>
-          <a class="vault_share_btn" target="_blank" rel="noopener"
-             href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fvault.urbaninteractiveadventures.com">f Facebook</a>
-          <a class="vault_share_btn" target="_blank" rel="noopener"
-             href="https://t.me/share/url?url=https%3A%2F%2Fvault.urbaninteractiveadventures.com&text=The%20WeGotUsTV%20Library%20Vault%20%E2%80%94%20free%20to%20search.">✈ Telegram</a>
-          <a class="vault_share_btn" target="_blank" rel="noopener"
-             href="https://wa.me/?text=The%20WeGotUsTV%20Library%20Vault%20%E2%80%94%20free%20to%20search.%20https%3A%2F%2Fvault.urbaninteractiveadventures.com">◎ WhatsApp</a>
-        </div>
-        """)
+        gr.HTML(VAULT_SHARE_ROW)
 
         gr.HTML("""
         <div class="free_access_wrap">
@@ -2179,15 +2222,6 @@ vault_app.queue()
 # platform already learned the hard way: an image behind a redirect comes back
 # blank because image fetchers do not follow redirects.
 # =========================================================
-
-VAULT_URL = "https://vault.urbaninteractiveadventures.com/"
-VAULT_TITLE = "WeGotUsTV Library Vault"
-VAULT_DESCRIPTION = (
-    "Over 2,800 PDF books, 15th–21st century — alchemy, hermeticism, magic, "
-    "mysticism, religion, mythology, early science and philosophy. "
-    "Free to search. We Got Us, Knowledge is Power. 🔴"
-)
-VAULT_IMAGE = "https://www.wegotustv.com/og-wegotustv.jpg"
 
 SOCIAL_META_PATTERN = re.compile(
     r"<meta[^>]+(?:property|name)\s*=\s*[\"'](?:og:|twitter:)[^\"']*[\"'][^>]*>",

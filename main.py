@@ -9,6 +9,8 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
 
 # =========================================================
 # PROJECT PATHS
@@ -2149,7 +2151,113 @@ with gr.Blocks(css=CUSTOM_CSS, title="WeGotUsTV Library Vault") as vault_app:
 
 vault_app.queue()
 
+# =========================================================
+# THE SHARE CARD — WHY THIS IS A MIDDLEWARE AND NOT A `head=` ARGUMENT
+#
+# Esa shared the vault to Facebook and got a bare grey box: no picture, no
+# headline, just the hostname. "It did not share. It just popped up like that,
+# and we don't want that."
+#
+# Measured on the live site, this is what Facebook was being handed:
+#
+#     <meta property="og:url"   content="{url}" />            <- unsubstituted
+#     <meta property="og:title" content="Gradio" />
+#     <meta property="og:url"   content="https://gradio.app/" />
+#     <meta property="og:image" content="" />                 <- EMPTY
+#
+# Gradio writes its own card first, then overwrites it from `title=` — and the
+# overwrite ships an EMPTY og:image and an og:url pointing at gradio.app. There
+# was never a picture for Facebook to draw.
+#
+# Adding a `head=` block would only append a THIRD set of the same properties;
+# the empty image and the gradio.app URL would still be sitting above ours, and
+# scrapers read the first one they find. So the junk has to come out, not get
+# out-voted. This strips every og:/twitter: meta from the HTML shell and writes
+# one clean set in its place.
+#
+# 🔴 THE IMAGE IS SERVED FROM www.wegotustv.com ON PURPOSE — the same rule the
+# platform already learned the hard way: an image behind a redirect comes back
+# blank because image fetchers do not follow redirects.
+# =========================================================
+
+VAULT_URL = "https://vault.urbaninteractiveadventures.com/"
+VAULT_TITLE = "WeGotUsTV Library Vault"
+VAULT_DESCRIPTION = (
+    "Over 2,800 PDF books, 15th–21st century — alchemy, hermeticism, magic, "
+    "mysticism, religion, mythology, early science and philosophy. "
+    "Free to search. We Got Us, Knowledge is Power. 🔴"
+)
+VAULT_IMAGE = "https://www.wegotustv.com/og-wegotustv.jpg"
+
+SOCIAL_META_PATTERN = re.compile(
+    r"<meta[^>]+(?:property|name)\s*=\s*[\"'](?:og:|twitter:)[^\"']*[\"'][^>]*>",
+    re.IGNORECASE,
+)
+
+VAULT_SOCIAL_META = (
+    f'<meta property="og:site_name" content="WeGotUsTV" />'
+    f'<meta property="og:type" content="website" />'
+    f'<meta property="og:url" content="{VAULT_URL}" />'
+    f'<meta property="og:title" content="{VAULT_TITLE}" />'
+    f'<meta property="og:description" content="{html.escape(VAULT_DESCRIPTION)}" />'
+    f'<meta property="og:image" content="{VAULT_IMAGE}" />'
+    f'<meta property="og:image:width" content="1200" />'
+    f'<meta property="og:image:height" content="630" />'
+    f'<meta name="twitter:card" content="summary_large_image" />'
+    f'<meta name="twitter:title" content="{VAULT_TITLE}" />'
+    f'<meta name="twitter:description" content="{html.escape(VAULT_DESCRIPTION)}" />'
+    f'<meta name="twitter:image" content="{VAULT_IMAGE}" />'
+    f'<link rel="canonical" href="{VAULT_URL}" />'
+)
+
+
+class VaultShareCardMiddleware(BaseHTTPMiddleware):
+    """Replace Gradio's broken social tags with the vault's own, on every
+    HTML page it serves. Anything that is not HTML passes straight through
+    untouched, so the app's own traffic pays nothing for this."""
+
+    async def dispatch(self, request, call_next):
+        response = await call_next(request)
+
+        if "text/html" not in response.headers.get("content-type", ""):
+            return response
+
+        body = b""
+        async for chunk in response.body_iterator:
+            body += chunk
+
+        try:
+            markup = body.decode("utf-8")
+        except UnicodeDecodeError:
+            return Response(
+                content=body,
+                status_code=response.status_code,
+                headers=dict(response.headers),
+                media_type=response.media_type,
+            )
+
+        cleaned = SOCIAL_META_PATTERN.sub("", markup)
+
+        if "</head>" in cleaned:
+            cleaned = cleaned.replace("</head>", VAULT_SOCIAL_META + "</head>", 1)
+        else:
+            cleaned = VAULT_SOCIAL_META + cleaned
+
+        payload = cleaned.encode("utf-8")
+        headers = dict(response.headers)
+        headers["content-length"] = str(len(payload))
+
+        return Response(
+            content=payload,
+            status_code=response.status_code,
+            headers=headers,
+            media_type="text/html",
+        )
+
+
 server = FastAPI(title="WeGotUsTV Library Vault")
+
+server.add_middleware(VaultShareCardMiddleware)
 
 server.mount(
     "/assets",

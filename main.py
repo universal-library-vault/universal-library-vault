@@ -1978,6 +1978,25 @@ a[href*="gradio.app"] {
   border:1px solid rgba(255,255,255,.18); color:#f2f2f2 !important;
 }
 .vault_share_btn:hover{ background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.34); }
+
+/* 🔴 THE SOCIAL ROW, CARRIED ONTO THE VAULT.
+   The vault is OURS — our repo, our Render service, our 2,800 books — so it
+   gets the same bar as any other room on the platform. Esa's rule: the nav row
+   you clicked is the nav row you keep, and a person who opened the vault from
+   Pulse should land back in Pulse, not on the six-door front page. */
+.vault_nav_row{
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
+  gap:4px 10px; padding:10px 14px 2px;
+}
+.vault_nav_link{
+  color:rgba(255,255,255,.85) !important; text-decoration:none !important;
+  font-weight:700; font-size:12.5px; letter-spacing:-.01em; white-space:nowrap;
+  transition:color .15s ease;
+}
+.vault_nav_link:hover{ color:#fff !important; }
+.vault_nav_link.is_accent{ color:#f87171 !important; font-size:15px; line-height:1; }
+.vault_nav_link.is_accent:hover{ color:#fca5a5 !important; }
+.vault_nav_sep{ color:rgba(255,255,255,.25); font-size:12px; user-select:none; }
 """
 
 # =========================================================
@@ -2029,9 +2048,43 @@ SHARE_PITCH = (
 _u = urllib.parse.quote(VAULT_SHARE_URL, safe="")
 _t = urllib.parse.quote(SHARE_PITCH, safe="")
 
+# 🔴 THE WAY BACK IS THE ROOM THEY CAME FROM, NOT THE FRONT DOOR.
+#
+# The vault is reached from the Social row on wegotustv.com, and it opens in a
+# new tab — so "← WeGotUsTV" on its own dropped somebody on the six-door home
+# page in a THIRD tab, with the Pulse bar nowhere in sight. Esa: "library vault
+# throws a person totally off."
+#
+# Every link below carries `?from=social`, which is the marker the platform's
+# nav reads (app/lib/realms.ts, withRealmMarker) to keep the Social row up. They
+# open in this same tab, because this tab is already the second one.
+PLATFORM = "https://www.wegotustv.com"
+_NAV = [
+    ("Home", "/", ""),
+    ("Pulse", "/pulse", ""),
+    ("MTH", "/pulse/mth", ""),
+    ("Reels", "/pulse/reels", ""),
+    ("+", "/pulse/create", " is_accent"),
+    ("Messages", "/messages", ""),
+    ("Pull Up", "/pullup", ""),
+    ("Radio", "/radio?from=social", ""),
+    ("Profile", "/account/profile?from=social", ""),
+]
+VAULT_NAV_ROW = (
+    '<div class="vault_nav_row">'
+    + '<span class="vault_nav_sep">·</span>'.join(
+        f'<a class="vault_nav_link{cls}" href="{PLATFORM}{path}"'
+        + (' aria-label="Create a post"' if label == "+" else "")
+        + f">{label}</a>"
+        for label, path, cls in _NAV
+    )
+    + "</div>"
+)
+
 VAULT_SHARE_ROW = f"""
+{VAULT_NAV_ROW}
 <div class="vault_share_row">
-  <a class="vault_home_btn" href="https://www.wegotustv.com" target="_blank" rel="noopener">← WeGotUsTV</a>
+  <a class="vault_home_btn" href="{PLATFORM}/pulse?from=social">← WeGotUsTV</a>
   <a class="vault_share_btn" target="_blank" rel="noopener"
      href="https://twitter.com/intent/tweet?text={_t}&url={_u}">𝕏 Post</a>
   <a class="vault_share_btn" target="_blank" rel="noopener"
